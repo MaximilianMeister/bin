@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+ip=$1
+method=$2
+route=$3
+body=$4
+
+url=https://raw.githubusercontent.com/MaximilianMeister/bin/master/chef_api_lib.sh
+
+function usage() {
+  echo "Usage: chef_api SERVER_IP METHOD [ROUTE] [BODY]"
+  exit 1
+}
+
+[[ -z $ip || -z $method ]] && usage
+
+ssh-copy-id root@$ip > /dev/null 2>&1
+ssh root@$ip "curl $url > /tmp/chef_api_lib.sh" > /dev/null 2>&1
+ssh root@$ip "source /tmp/chef_api_lib.sh; chef_api_request $method $route $body" | python -m json.tool
